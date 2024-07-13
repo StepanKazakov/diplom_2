@@ -23,30 +23,6 @@ def unique_user_data():
     }
 
 
-def user_missing_email():
-    return {
-        "email": "",
-        "password": generate_random_string(8),
-        "name": generate_random_string(6)
-    }
-
-
-def user_missing_password():
-    return {
-        "email": generate_random_email(),
-        "password": "",
-        "name": generate_random_string(6)
-    }
-
-
-def user_missing_name():
-    return {
-        "email": generate_random_email(),
-        "password": generate_random_string(8),
-        "name": ""
-    }
-
-
 def set_random_ingredients():
     # Запрашиваем весь список ингредиентов и сортируем их по видам: булочки, соусы и начинки
     response = requests.get(f"{base_url}{path}/ingredients")

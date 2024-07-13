@@ -1,7 +1,7 @@
 import pytest
 import allure
 from api_methods.api_user import ApiUser
-from generate_data import unique_user_data, user_missing_name, user_missing_password, user_missing_email
+from generate_data import unique_user_data
 from response_data import *
 
 
@@ -28,11 +28,12 @@ class TestUser:
         assert response.status_code == 403
         assert response.json().get("message") == duplicate_user
 
-    @pytest.mark.parametrize("user_data", [user_missing_email, user_missing_password, user_missing_name])
+    @pytest.mark.parametrize("missing_field", ["email", "password", "name"])
     @allure.title("Создать пользователя и не заполнить одно из обязательных полей")
-    def test_create_user_missing_field(self, user_data):
-        user_data = user_data()
-        with allure.step("Создание трех пользователей, у каждого нет одного из трех обязательных полей"):
+    def test_create_user_missing_field(self, missing_field):
+        user_data = unique_user_data()
+        del user_data[missing_field]
+        with allure.step(f"Создание пользователя без поля: {missing_field}"):
             response = self.api_user.create_user(user_data)
         assert response.status_code == 403
         assert response.json().get("message") == required_fields
