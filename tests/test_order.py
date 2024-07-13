@@ -1,6 +1,7 @@
 import allure
 from api_methods.api_order import ApiOrder
 from generate_data import set_invalid_ingredients, set_random_ingredients
+from response_data import *
 
 
 @allure.feature("Order API")
@@ -31,7 +32,7 @@ class TestOrder:
         with allure.step("Создание заказа без ингредиентов"):
             response = self.api_order.create_order(order_data)
         assert response.status_code == 400
-        assert response.json().get("message") == "Ingredient ids must be provided"
+        assert response.json().get("message") == miss_ingredient
 
     @allure.title("Создание заказа из несуществующих ингредиентов")
     def test_create_order_with_invalid_ingredients(self):
@@ -52,4 +53,4 @@ class TestOrder:
         with allure.step("Получение заказов конкретного пользователя без авторизации"):
             response = self.api_order.get_orders()
         assert response.status_code == 401
-        assert response.json().get("message") == "You should be authorised"
+        assert response.json().get("message") == unauthorised

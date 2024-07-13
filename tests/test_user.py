@@ -2,6 +2,7 @@ import pytest
 import allure
 from api_methods.api_user import ApiUser
 from generate_data import unique_user_data, user_missing_name, user_missing_password, user_missing_email
+from response_data import *
 
 
 @allure.feature("User API")
@@ -25,7 +26,7 @@ class TestUser:
             self.api_user.create_user(new_user)
             response = self.api_user.create_user(new_user)
         assert response.status_code == 403
-        assert response.json().get("message") == "User already exists"
+        assert response.json().get("message") == duplicate_user
 
     @pytest.mark.parametrize("user_data", [user_missing_email, user_missing_password, user_missing_name])
     @allure.title("Создать пользователя и не заполнить одно из обязательных полей")
@@ -34,7 +35,7 @@ class TestUser:
         with allure.step("Создание трех пользователей, у каждого нет одного из трех обязательных полей"):
             response = self.api_user.create_user(user_data)
         assert response.status_code == 403
-        assert response.json().get("message") == "Email, password and name are required fields"
+        assert response.json().get("message") == required_fields
 
     @allure.title("Логин под существующим пользователем")
     def test_login_user(self):
@@ -53,7 +54,7 @@ class TestUser:
         with allure.step("Логин с рандомными логином и паролем без регистрации пользователя"):
             response = self.api_user.login_user(new_user)
         assert response.status_code == 401
-        assert response.json().get("message") == "email or password are incorrect"
+        assert response.json().get("message") == incorrect_credentials
 
     @allure.title("Изменение данных авторизованного пользователя")
     def test_update_user_with_authorization(self, set_header):
@@ -69,4 +70,4 @@ class TestUser:
         with allure.step("Изменение данных не авторизованного пользователя"):
             response = self.api_user.update_user(update_data, {})
         assert response.status_code == 401
-        assert response.json().get("message") == "You should be authorised"
+        assert response.json().get("message") == unauthorised
